@@ -1,7 +1,7 @@
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/lineage_RMX3761.mk
+    $(LOCAL_DIR)/omni_RMX3761.mk
 
 COMMON_LUNCH_CHOICES := \
-    lineage_RMX3761-user \
-    lineage_RMX3761-userdebug \
-    lineage_RMX3761-eng
+    omni_RMX3761-user \
+    omni_RMX3761-userdebug \
+    omni_RMX3761-eng
