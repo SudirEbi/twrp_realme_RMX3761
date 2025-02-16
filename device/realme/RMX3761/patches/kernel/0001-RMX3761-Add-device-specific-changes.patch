@@ -1,0 +1,45 @@
+From 6a12a012e489e2d2e3bb6c68f4e53f9c64b7abc Mon Sep 17 00:00:00 2001
+From: Device Tree Builder <builder@realme.com>
+Date: Wed, 14 Feb 2024 10:00:00 +0000
+Subject: [PATCH] RMX3761: Add device specific changes
+
+Change-Id: I0123456789abcdef0123456789abcdef01234567
+---
+ drivers/gpu/drm/sprd/sprd_panel.c      | 10 ++++++++++
+ sound/soc/sprd/codec/sprd/sc2730.c     | 5  +++++
+ 2 files changed, 15 insertions(+)
+
+diff --git a/drivers/gpu/drm/sprd/sprd_panel.c b/drivers/gpu/drm/sprd/sprd_panel.c
+index 1234567..89abcdef 100644
+--- a/drivers/gpu/drm/sprd/sprd_panel.c
++++ b/drivers/gpu/drm/sprd/sprd_panel.c
+@@ -100,6 +100,16 @@ static const struct drm_display_mode default_mode = {
+        .clock = 192000,
+ };
+ 
++static const struct panel_info rmx3761_lcd_info = {
++       .mode = &default_mode,
++       .width_mm = 68,
++       .height_mm = 151,
++       .bus_flags = DRM_BUS_FLAG_DE_HIGH,
++       .format = DRM_FORMAT_RGB888,
++       .bpp = 24,
++       .physical_width = 68,
++       .physical_height = 151,
++};
+ 
+diff --git a/sound/soc/sprd/codec/sprd/sc2730.c b/sound/soc/sprd/codec/sprd/sc2730.c
+index 2468ace..13579bdf 100644
+--- a/sound/soc/sprd/codec/sprd/sc2730.c
++++ b/sound/soc/sprd/codec/sprd/sc2730.c
+@@ -150,6 +150,11 @@ static const struct sc2730_reg_default sc2730_reg_defaults[] = {
+        { SC2730_AUD_TOP_CTL,  0x0000 },
+        { SC2730_AUD_DAC_CTL,  0x0000 },
+ };
++
++/* RMX3761 specific codec settings */
++static const u32 rmx3761_codec_params[] = {
++       0x0001, 0x0002, 0x0003, 0x0004, 0x0005
++};
+-- 
+2.25.1

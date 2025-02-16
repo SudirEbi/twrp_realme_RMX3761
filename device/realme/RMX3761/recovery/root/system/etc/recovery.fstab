@@ -1,0 +1,23 @@
+# Android fstab file.
+# The filesystem that contains the filesystem checker binary (typically /system) cannot
+# specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
+
+# mount point    fstype     device                 device2                        flags
+/system          ext4      system                                                logical,first_stage_mount
+/system_ext      ext4      system_ext                                           logical,first_stage_mount
+/vendor          ext4      vendor                                               logical,first_stage_mount
+/product         ext4      product                                              logical,first_stage_mount
+/metadata        ext4      /dev/block/by-name/metadata                          wait,check,formattable,first_stage_mount
+/data            f2fs      /dev/block/by-name/userdata                          wait,check,formattable,quota,latemount,reservedsize=128m
+/cache           ext4      /dev/block/by-name/cache                             wait,check,formattable
+/misc            emmc      /dev/block/by-name/misc                              flags=display="Misc"
+/boot            emmc      /dev/block/by-name/boot                              flags=backup=1;flashimg=1
+/dtbo            emmc      /dev/block/by-name/dtbo                              flags=backup=1;display="Dtbo"
+/recovery        emmc      /dev/block/by-name/recovery                          flags=backup=1;flashimg=1
+/vbmeta          emmc      /dev/block/by-name/vbmeta                           flags=display="VBMeta";flashimg=1
+/vbmeta_system   emmc      /dev/block/by-name/vbmeta_system                    flags=display="VBMeta System";flashimg=1
+/vbmeta_vendor   emmc      /dev/block/by-name/vbmeta_vendor                    flags=display="VBMeta Vendor";flashimg=1
+
+# Removable storage
+/external_sd     auto      /dev/block/mmcblk1p1    /dev/block/mmcblk1           flags=display="Micro SDcard";storage;wipeingui;removable
+/usb-otg         auto      /dev/block/sda1         /dev/block/sda               flags=display="USB-OTG";storage;wipeingui;removable

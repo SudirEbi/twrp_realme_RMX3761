@@ -1,0 +1,25 @@
+# RMX3761 specific file contexts
+
+# Realme specific apps
+/system/app/realme(/.*)?                u:object_r:system_app_file:s0
+/system/priv-app/realme(/.*)?           u:object_r:system_app_file:s0
+
+# Hardware nodes
+/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/system     u:object_r:system_block_device:s0
+/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/vendor     u:object_r:vendor_block_device:s0
+/dev/block/platform/soc/soc:ap-ahb/20600000.sdio/by-name/userdata   u:object_r:userdata_block_device:s0
+
+# Sensors
+/dev/sprd_sensor                u:object_r:sensors_device:s0
+/dev/sprd_gsp                   u:object_r:graphics_device:s0
+
+# Camera
+/dev/sprd_image                 u:object_r:camera_device:s0
+/dev/sprd_jpg                   u:object_r:camera_device:s0
+
+# Audio
+/dev/audio_dsp_*               u:object_r:audio_device:s0
+/dev/audio_pipe*               u:object_r:audio_device:s0
+
+# Power
+/sys/devices/platform/soc/soc:ap-ahb/20600000.sdio/power/control   u:object_r:sysfs_power:s0

@@ -1,0 +1,20 @@
+# RMX3761 vendor file types
+
+# Block devices
+type vendor_block_device, dev_type;
+type userdata_block_device, dev_type;
+
+# Hardware devices
+type sensors_device, dev_type;
+type graphics_device, dev_type;
+type camera_device, dev_type;
+type audio_device, dev_type;
+
+# System files
+type system_app_file, file_type;
+type vendor_app_file, file_type;
+
+# Sysfs nodes
+type sysfs_power, sysfs_type, fs_type;
+type sysfs_battery, sysfs_type, fs_type;
+type sysfs_graphics, sysfs_type, fs_type;

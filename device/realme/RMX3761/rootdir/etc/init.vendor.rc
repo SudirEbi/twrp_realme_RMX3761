@@ -1,0 +1,105 @@
+# Copyright (C) 2024 The Android Open Source Project
+# Copyright (C) 2024 realme Mobile Communication Co., Ltd.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+on early-init
+    # Create vendor mount points
+    mkdir /vendor 0755 root root
+    mkdir /vendor/firmware 0771 system system
+    mkdir /vendor/firmware_mnt 0771 system system
+    
+    # Set up scheduler
+    write /proc/sys/kernel/sched_boost 1
+
+on init
+    # Setup permission for Power HAL
+    chown system system /dev/stune/top-app/schedtune.boost
+    chown system system /dev/cpu_dma_latency
+    
+    # Setup dynamic stune boost
+    write /dev/stune/top-app/schedtune.sched_boost 15
+    write /dev/stune/top-app/schedtune.boost 15
+    write /dev/stune/foreground/schedtune.sched_boost 1
+    write /dev/stune/background/schedtune.sched_boost 0
+    write /dev/stune/system-background/schedtune.sched_boost 0
+
+on fs
+    wait /dev/block/platform/${ro.boot.bootdevice}
+    symlink /dev/block/platform/${ro.boot.bootdevice} /dev/block/bootdevice
+    
+    # Mount vendor partition
+    mount_all /vendor/etc/fstab.${ro.hardware} --early
+    
+    # Restorecon for security
+    restorecon_recursive /vendor/firmware_mnt
+
+on post-fs
+    # Start HW service manager early
+    start vendor.hwservicemanager
+    
+    # Wait for hwservicemanager ready since fsck might be triggered
+    wait_for_prop hwservicemanager.ready true
+    
+    # Mount RW partitions which need run fsck
+    mount_all /vendor/etc/fstab.${ro.hardware} --late
+
+on post-fs-data
+    # Create directories for fingerprint
+    mkdir /data/vendor/fingerprint 0770 system system
+    
+    # Create directory for camera
+    mkdir /data/vendor/camera 0770 camera camera
+    
+    # Create directory for radio
+    mkdir /data/vendor/radio 0770 radio radio
+    
+    # Create directory for wifi
+    mkdir /data/vendor/wifi 0771 wifi wifi
+    mkdir /data/vendor/wifi/wpa 0770 wifi wifi
+    mkdir /data/vendor/wifi/wpa/sockets 0770 wifi wifi
+
+on boot
+    # Set DRM service permissions
+    chown media system /sys/class/drm/card0/device/hdcp2p2/min_level
+    chmod 0664 /sys/class/drm/card0/device/hdcp2p2/min_level
+    
+    # Set WiFi permissions
+    chown wifi wifi /sys/module/wlan/parameters/fwpath
+    chmod 0644 /sys/module/wlan/parameters/fwpath
+    
+    # Set BT permissions
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/state
+    chown bluetooth bluetooth /sys/class/rfkill/rfkill0/type
+    chmod 0660 /sys/class/rfkill/rfkill0/state
+    chmod 0660 /sys/class/rfkill/rfkill0/type
+
+service vendor.hwservicemanager /vendor/bin/hwservicemanager
+    class core
+    user system
+    group system readproc
+    critical
+    onrestart setprop hwservicemanager.ready false
+    onrestart class_restart hal
+    onrestart class_restart early_hal
+    writepid /dev/cpuset/system-background/tasks
+
+service vendor.servicemanager /vendor/bin/servicemanager
+    class core
+    user system
+    group system readproc
+    critical
+    onrestart restart vendor.hwservicemanager
+    onrestart class_restart hal
+    onrestart class_restart early_hal
+    writepid /dev/cpuset/system-background/tasks
+
+service vendor.keymaster-4-0 /vendor/bin/hw/android.hardware.keymaster@4.0-service
+    class early_hal
+    user system
+    group system drmrpc
+
+service vendor.gatekeeper-1-0 /vendor/bin/hw/android.hardware.gatekeeper@1.0-service
+    class hal
+    user system
+    group system
